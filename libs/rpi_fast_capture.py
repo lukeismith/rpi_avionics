@@ -22,9 +22,10 @@ class rpi_fast_capture(threading.Thread):
         self.videoCmd = split.("raspividyuv -w "+str(w)+" -h "+str(h)+" --output - --timeout 0 --framerate "+str(fps)+" --luma --nopreview")
         self.cameraProcess = sp.Popen(videoCmd, stdout=sp.PIPE)
         atexit.register(cameraProcess.terminate)
+        self.
 
     def run():
-        
+
 
     def record():
 
