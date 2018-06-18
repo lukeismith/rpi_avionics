@@ -20,6 +20,10 @@ def main():
     status_led = gpiozero.LED(23)
     record_switch = gpiozero.Button(24)
 
+    # Initialize SPI device
+    # 
+    sense_pressure = gpiozero.SPIDevice()
+
     xyzs = accelerometerThread(adc, record_data)
     cam = cameraThread(record_data)
 
