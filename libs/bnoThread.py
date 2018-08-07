@@ -4,15 +4,14 @@ import sys
 import time
 import threading
 
-from Adafruit_BNO055 import BNO055
+import libs.BNO055
 
 
 class bnoThread(threading.Thread):
-    def __init(self, mode, record_data):
+    def __init(self, record_data):
         threading.Thread.__init__(self)
-        self.bno = BNO055.BNO055(serial_port='/dev/serial10', rst=18)
+        self.bno = BNO055.BNO055(serial_port='/dev/serial0', rst=18)
         self.record_data = record_data
-        self.mode = mode
 
     def run(self):
         if not self.bno.begin():

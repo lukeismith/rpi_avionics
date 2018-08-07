@@ -5,20 +5,22 @@
 
 import time
 import threading
-import Adafruit_ADS1x15
+#import Adafruit_ADS1x15
 import gpiozero
 import logging
 import sys
+import importlib
 
 from picamera import PiCamera
 from libs.accelerometerThread import accelerometerThread
-from libs.cameraThread import cameraThread
-from Adafruit_BNO055 import BNO055
+from libs.bnoThread import bnoThread
+from libs.Adafruit_BNO055 import BNO055
+#from libs.cameraThread import cameraThread
 
 def main():
     # Initialize adc module
     #adc = Adafruit_ADS1x15.ADS1115()
-
+    
     # Keep recording until this is set to true
     record_data = threading.Event()
     # Initialize gpio pins
@@ -32,15 +34,26 @@ def main():
     #xyzs = accelerometerThread(adc, record_data)
     #cam = cameraThread(record_data)
 
-    bno = BNO055.BNO055(serial_port='/dev/serial10', rst=18)
+    #bno = bnoThread(record_data)
 
-    if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
-        logging.basicConfig(level=logging.DEBUG)
+    #bno.start()
 
-    
+    bno = BNO055.BNO055(serial_port='/dev/serial0', rst=18)
+    if not bno.begin():
+        raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
 
     #xyzs.start()
     #cam.start()
+
+    with open ("data/bno.txt", "a+") as bno_data:
+        bno_data.write("Using format: {0}".format("hello"))
+        bno_data.write('{0:32}, {1:20}, {2:20}, {3:20}, {4:20}, {5:20}, {6:20}, {7:20}, {8:20}, {9:20}\n'.format("Time", "Mag X", "Mag Y", "Mag Z", "Gyro X", "Gyro Y", "Gyro Z", "Accel X", "Accel Y", "Accel Z"))
+
+        while True:
+            mag = bno.read_magnetometer();
+            gyro = bno.read_gyroscope();
+            accel = bno.read_accelerometer();
+            bno_data.write('{0:32}, {1:20.16}, {2:20.16}, {3:20.16}, {4:20.16}, {5:20.16}, {6:20.16}, {7:20.16}, {8:20.16}, {9:20.16}\n'.format(time.time(), mag[0], mag[1], mag[2], gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2]))
 
     while True:
 
