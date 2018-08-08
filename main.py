@@ -12,6 +12,7 @@ import sys
 import importlib
 
 from picamera import PiCamera
+from libs import BMP280
 from libs import Adafruit_ADS1x15
 from libs.accelerometerThread import accelerometerThread
 from libs.bnoThread import bnoThread
@@ -72,13 +73,17 @@ def main():
     '''
     #Try both adc and BNO055 at the same time
 
+    bar = BMP280.BMP280(mode = 0)
+
     adc = Adafruit_ADS1x15.ADS1115()
     GAIN = 1
     bno = BNO055.BNO055()
-    with open ("data/200g.txt", "a+") as adc_data, open ("data/bno.txt", "a+") as bno_data:
+    with open ("data/200g.txt", "a+") as adc_data, open ("data/bno.txt", "a+") as bno_data, open ("data/bmp280.txt", "a+") as bmp_data:
         adc_data.write('{0:32}, {1:20}, {2:20}, {3:20}\n'.format("TIME", 'x', 'y', 'z'))
         bno_data.write('{0:32}, {1:20}, {2:20}, {3:20}, {4:20}, {5:20}, {6:20}, {7:20}, {8:20}, {9:20}\n'.format("Time", "Mag X", "Mag Y", "Mag Z", "Gyro X", "Gyro Y", "Gyro Z", "Accel X", "Accel Y", "Accel Z"))
+        bmp_data.write('{0:40}, {1:20}\n'.format("Time", "Altitude (m)"))
 
+        count = 0
         while True:
             x = adc.read_adc_difference(1, gain=GAIN, data_rate=860)
             y = adc.read_adc_difference(2, gain=GAIN, data_rate=860)
@@ -88,6 +93,13 @@ def main():
             accel = bno.read_accelerometer()
             adc_data.write('{0:32}, {1:20}, {2:20}, {3:20}\n'.format(time.time(), x, y, z))
             bno_data.write('{0:32}, {1:20.16}, {2:20.16}, {3:20.16}, {4:20.16}, {5:20.16}, {6:20.16}, {7:20.16}, {8:20.16}, {9:20.16}\n'.format(time.time(), mag[0], mag[1], mag[2], gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2]))
+            if (count == 7):
+                altitude = bar.read_altitude()
+                bmp_data.write('{0:40}, {1:20}\n'.format(time.time(), altitude))
+                count = 0
+            else:
+                count += 1
+
     '''
     while True:
 
