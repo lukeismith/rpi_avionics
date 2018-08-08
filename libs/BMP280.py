@@ -8,6 +8,7 @@
 
 from __future__ import division
 import logging
+from libs import I2C
 
 # BMP280 default address.
 BMP280_I2CADDR = 0x77
@@ -40,7 +41,6 @@ class BMP280(object):
 
         # Create I2C device.
         if i2c is None:
-            import Adafruit_GPIO.I2C as I2C
             i2c = I2C
 
         self._device = i2c.get_i2c_device(address, **kwargs)
