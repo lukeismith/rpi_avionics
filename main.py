@@ -73,7 +73,7 @@ def main():
     '''
     #Try both adc and BNO055 at the same time
 
-    bar = BMP280.BMP280(mode = 0)
+    bar = BMP280.BMP280()
 
     adc = Adafruit_ADS1x15.ADS1115()
     GAIN = 1
