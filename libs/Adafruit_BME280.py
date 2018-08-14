@@ -199,6 +199,7 @@ class BME280(object):
         """Returns the raw (uncompensated) pressure level from the sensor."""
         """Assumes that the temperature has already been read """
         """i.e. that BME280Data[] has been populated."""
+        self.BME280Data = self._device.readList(BME280_REGISTER_DATA, 8)
         raw = ((self.BME280Data[0] << 16) | (self.BME280Data[1] << 8) | self.BME280Data[2]) >> 4
         return raw
 
